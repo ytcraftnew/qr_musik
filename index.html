@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Meta tags dasar -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pemutar Musik Otomatis - Scan QR Code dan nikmati musik favorit Anda">
+
+    <!-- Open Graph untuk sharing -->
+    <meta property="og:title" content="🎵 QR Music Player">
+    <meta property="og:description" content="Pemutar musik otomatis via QR Code">
+    <meta property="og:type" content="website">
+
+    <!-- Stylesheet utama -->
+    <link rel="stylesheet" href="style.css">
+
+    <title>🎵 QR Music Player</title>
+</head>
+<body>
+    <!-- ===== PARTICLE BACKGROUND CANVAS ===== -->
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+
+    <!-- ===== BACKGROUND BLUR OVERLAY ===== -->
+    <div class="bg-blur" id="bgBlur"></div>
+
+    <!-- ===== AUTOPLAY OVERLAY ===== -->
+    <div class="autoplay-overlay" id="autoplayOverlay">
+        <div class="autoplay-content">
+            <div class="autoplay-icon">
+                <svg viewBox="0 0 100 100" width="80" height="80">
+                    <defs>
+                        <linearGradient id="noteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6c5ce7"/>
+                            <stop offset="100%" style="stop-color:#a29bfe"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Music note icon -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#noteGrad)" stroke-width="2" opacity="0.3"/>
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="url(#noteGrad)" stroke-width="1" opacity="0.2"/>
+                    <text x="50" y="62" text-anchor="middle" font-size="40">🎵</text>
+                </svg>
+            </div>
+            <h2>Putar Musik</h2>
+            <p>Klik tombol di bawah untuk memulai</p>
+            <button class="btn-play-big" id="btnEnablePlay" aria-label="Putar Musik">
+                <span class="btn-play-icon">▶</span>
+                <span>Putar Musik</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== MUSIC PLAYER UTAMA ===== -->
+    <main class="player-container">
+        <div class="player-card">
+            <!-- === HEADER === -->
+            <header class="player-header">
+                <h1 class="app-title">🎵 Music Player</h1>
+                <p class="app-subtitle">QR Code Music</p>
+            </header>
+
+            <!-- === ALBUM ART VINYL === -->
+            <div class="album-section">
+                <div class="vinyl-wrapper">
+                    <!-- Vinyl record grooves (decorative) -->
+                    <div class="vinyl-grooves"></div>
+                    <div class="vinyl-record" id="vinylRecord">
+                        <div class="vinyl-label">
+                            <img src="images/placeholder.svg" alt="Album Cover" class="album-cover" id="albumCover" loading="lazy">
+                        </div>
+                        <div class="vinyl-hole"></div>
+                    </div>
+                    <!-- Vinyl shine effect -->
+                    <div class="vinyl-shine"></div>
+                    <!-- Indikator putar -->
+                    <div class="play-indicator" id="playIndicator">
+                        <span class="bar bar-1"></span>
+                        <span class="bar bar-2"></span>
+                        <span class="bar bar-3"></span>
+                        <span class="bar bar-4"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === AUDIO VISUALIZER === -->
+            <div class="visualizer-section" id="visualizerSection">
+                <canvas id="visualizer" class="visualizer-canvas" width="340" height="60"></canvas>
+            </div>
+
+            <!-- === INFO LAGU === -->
+            <section class="song-info" aria-label="Informasi lagu">
+                <h2 class="song-title" id="songTitle">Judul Lagu</h2>
+                <p class="song-artist" id="songArtist">Nama Artis</p>
+            </section>
+
+            <!-- === PROGRESS BAR === -->
+            <section class="progress-section" aria-label="Progress bar">
+                <div class="time-display">
+                    <span id="currentTime">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+                <div class="progress-bar" id="progressBar" role="slider" aria-label="Progress lagu" tabindex="0">
+                    <div class="progress-fill" id="progressFill"></div>
+                    <div class="progress-thumb" id="progressThumb"></div>
+                    <div class="progress-glow" id="progressGlow"></div>
+                </div>
+            </section>
+
+            <!-- === KONTROL UTAMA === -->
+            <section class="controls" aria-label="Kontrol pemutar">
+                <!-- Tombol shuffle -->
+                <button class="control-btn" id="btnShuffle" aria-label="Acak" title="Acak">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 3 21 3 21 8"></polyline>
+                        <line x1="4" y1="20" x2="21" y2="3"></line>
+                        <polyline points="21 16 21 21 16 21"></polyline>
+                        <line x1="15" y1="15" x2="21" y2="21"></line>
+                        <line x1="4" y1="4" x2="9" y2="9"></line>
+                    </svg>
+                </button>
+
+                <!-- Tombol Previous -->
+                <button class="control-btn" id="btnPrev" aria-label="Lagu Sebelumnya" title="Sebelumnya">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M19 20L9 12l10-8v16zM5 19V5h2v14H5z"/>
+                    </svg>
+                </button>
+
+                <!-- Tombol Play/Pause -->
+                <button class="control-btn btn-play" id="btnPlay" aria-label="Putar" title="Putar">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" id="playIcon">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+
+                <!-- Tombol Next -->
+                <button class="control-btn" id="btnNext" aria-label="Lagu Selanjutnya" title="Selanjutnya">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M5 20l10-8L5 4v16zM19 4v16h-2V4h2z"/>
+                    </svg>
+                </button>
+
+                <!-- Tombol repeat -->
+                <button class="control-btn" id="btnRepeat" aria-label="Ulangi" title="Ulangi">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="17 1 21 5 17 9"></polyline>
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                        <polyline points="7 23 3 19 7 15"></polyline>
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                    </svg>
+                </button>
+            </section>
+
+            <!-- === VOLUME CONTROL === -->
+            <section class="volume-section" aria-label="Kontrol volume">
+                <button class="control-btn btn-volume" id="btnMute" aria-label="Bisu" title="Bisu">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" id="volumeIcon">
+                        <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" id="volumeWave"/>
+                    </svg>
+                </button>
+                <div class="volume-slider">
+                    <div class="volume-fill" id="volumeFill" style="width: 75%"></div>
+                    <input type="range" class="volume-range" id="volumeRange" min="0" max="1" step="0.01" value="0.75" aria-label="Volume">
+                </div>
+                <span class="volume-percent" id="volumePercent">75%</span>
+            </section>
+
+            <!-- === PLAYLIST === -->
+            <section class="playlist-section" aria-label="Daftar putar">
+                <div class="playlist-header">
+                    <h3 class="playlist-title">📋 Daftar Lagu</h3>
+                    <span class="playlist-count" id="playlistCount">0 lagu</span>
+                </div>
+                <ul class="playlist" id="playlist" role="listbox" aria-label="Daftar putar">
+                    <!-- Playlist akan diisi oleh JavaScript -->
+                </ul>
+            </section>
+
+            <!-- === FOOTER === -->
+            <footer class="player-footer">
+                <p>✨ Scan QR Code untuk memutar musik</p>
+            </footer>
+        </div>
+    </main>
+
+    <!-- ===== AUDIO ELEMENT ===== -->
+    <audio id="audioPlayer" preload="metadata"></audio>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js"></script>
+</body>
+</html>

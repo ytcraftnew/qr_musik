@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6c5ce7"/>
+      <stop offset="50%" style="stop-color:#a29bfe"/>
+      <stop offset="100%" style="stop-color:#4834d4"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.4)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.1)"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="300" height="300" fill="url(#bg)" rx="12"/>
+  <!-- Vinyl ring -->
+  <circle cx="150" cy="130" r="75" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+  <circle cx="150" cy="130" r="65" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <circle cx="150" cy="130" r="55" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+  <circle cx="150" cy="130" r="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <!-- Vinyl label -->
+  <circle cx="150" cy="130" r="35" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="150" cy="130" r="30" fill="rgba(255,255,255,0.05)"/>
+  <!-- Hole -->
+  <circle cx="150" cy="130" r="5" fill="rgba(0,0,0,0.4)"/>
+  <!-- Music note -->
+  <g filter="url(#glow)">
+    <text x="150" y="145" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="36">🎵</text>
+  </g>
+  <!-- Text -->
+  <text x="150" y="215" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="500">No Cover Image</text>
+  <text x="150" y="235" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="Inter, Arial, sans-serif" font-size="10">Add cover to images/ folder</text>
+  <!-- Musical bars -->
+  <g transform="translate(120, 175)" opacity="0.4">
+    <rect x="0" y="-8" width="4" height="8" rx="2" fill="rgba(255,255,255,0.6)"/>
+    <rect x="8" y="-14" width="4" height="14" rx="2" fill="rgba(255,255,255,0.5)"/>
+    <rect x="16" y="-10" width="4" height="10" rx="2" fill="rgba(255,255,255,0.6)"/>
+    <rect x="24" y="-16" width="4" height="16" rx="2" fill="rgba(255,255,255,0.4)"/>
+    <rect x="32" y="-6" width="4" height="6" rx="2" fill="rgba(255,255,255,0.5)"/>
+  </g>
+</svg>
